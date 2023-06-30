@@ -1,4 +1,8 @@
 <script>
+  import api from '../utils/api';
+  import { writable } from 'svelte/store';
+  import { onMount } from 'svelte';
+  import { setContext, getContext } from 'svelte';
   import AddPlacePopup from './AddPlacePopup.svelte';
   import EditAvatarPopup from './EditAvatarPopup.svelte';
   import EditProfilePopup from './EditProfilePopup.svelte';
@@ -9,6 +13,13 @@
   let isOpenPopupAvatar = false;
   let isOpenPopupProfile = false;
   let isOpenPopupPlace = false;
+  let cards = [];
+  let currentUser = writable({
+    name: '',
+    about: '',
+    avatar: '',
+    _id: '',
+  });
 
   // Открытие модальных окон ---------------
   const toogleAvatarPopup = () => {
@@ -23,6 +34,50 @@
     isOpenPopupPlace = !isOpenPopupPlace;
   };
   // -------------------------------------
+
+  setContext('currentUser', currentUser);
+  let user = getContext('currentUser');
+
+  // Получаем карточки
+
+  onMount(() => {
+    api
+      .getProfile()
+      .then((res) => {
+        console.log(res);
+        currentUser.set({
+          name: res.name,
+          about: res.about,
+          avatar: res.avatar,
+          _id: res._id,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    api
+      .getInitialCards()
+      .then((res) => {
+        cards = res;
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+
+  function handleCardLike(card) {
+    let isLiked = card.likes.some((i) => i._id === $user._id);
+    api
+      .changeLikeCardStatus(card._id, !isLiked)
+      .then((newCard) => {
+        cards = cards.map((c) => (c._id === card._id ? newCard : c));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 </script>
 
 <div class="root__container">
@@ -31,6 +86,8 @@
     openEditAvatar={toogleAvatarPopup}
     openEditProfile={toogleProfilePopup}
     openAddCard={tooglePlacePopup}
+    {cards}
+    onCardLike={handleCardLike}
   />
   <EditAvatarPopup isOpen={isOpenPopupAvatar} onClose={toogleAvatarPopup} />
   <EditProfilePopup isOpen={isOpenPopupProfile} onClose={toogleProfilePopup} />

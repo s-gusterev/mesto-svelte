@@ -1,27 +1,24 @@
 <script>
-  import avatar from '../assets/images/avatar.jpg';
-  import Card from './Card.svelte';
-  import img1 from '../assets/images/elbrus.jpg';
+  import { getContext } from 'svelte';
 
-  const cards = [
-    { id: '1', name: 'Эльбрус', link: img1, likes: [1, 2, , , , ,] },
-    { id: '2', name: 'Эльбрус', link: img1, likes: [1, 2, , , , , 2] },
-    { id: '3', name: 'Эльбрус', link: img1, likes: [1, 2, , , , , 4, 5, 5, 5] },
-    { id: '4', name: 'Эльбрус', link: img1, likes: [1, 2, ,] },
-    { id: '5', name: 'Эльбрус', link: img1, likes: [1, ,] },
-    { id: '6', name: 'Эльбрус', link: img1, likes: [] },
-    { id: '7', name: 'Эльбрус', link: img1, likes: [1, 2] },
-  ];
+  import Card from './Card.svelte';
 
   export let openEditAvatar;
   export let openEditProfile;
   export let openAddCard;
+  export let cards;
+  export let onCardLike;
+
+  let user = getContext('currentUser');
 </script>
 
 <main class="main">
   <section class="profile main__profile">
     <div class="profile__info">
-      <div class="profile__avatar" style="background-image: url({avatar})">
+      <div
+        class="profile__avatar"
+        style="background-image: url({$user.avatar})"
+      >
         <button
           class="profile__btn-edit-avatar"
           type="button"
@@ -30,8 +27,8 @@
         />
       </div>
       <div class="profile__name">
-        <h1 class="profile__title">Сергей Густерёв</h1>
-        <p class="profile__subtitle">Веб-разработчик</p>
+        <h1 class="profile__title">{$user.name}</h1>
+        <p class="profile__subtitle">{$user.about}</p>
         <button
           class="profile__btn-edit-profile"
           type="button"
@@ -47,8 +44,8 @@
       />
     </div>
     <ul class="cards">
-      {#each cards as card (card.id)}
-        <Card {card} />
+      {#each cards as card (card._id)}
+        <Card {card} {onCardLike} />
       {/each}
     </ul>
   </section>
