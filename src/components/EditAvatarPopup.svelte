@@ -10,7 +10,7 @@
     e.preventDefault();
 
     onUpdateAvatar({
-      avatar: avatar,
+      avatar,
     });
     avatar = '';
   };

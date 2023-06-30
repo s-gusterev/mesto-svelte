@@ -42,7 +42,6 @@
   let user = getContext('currentUser');
 
   // Получаем карточки
-
   onMount(() => {
     api
       .getProfile()
@@ -68,6 +67,7 @@
       });
   });
 
+  // Ставим лайк
   const handleCardLike = (card) => {
     let isLiked = card.likes.some((i) => i._id === $user._id);
     api
@@ -80,6 +80,7 @@
       });
   };
 
+  // Обновляем аватар
   const handleUpdateAvatar = (user) => {
     const { avatar } = user;
     btnTextPopupAvatar = 'Сохранение';
@@ -101,6 +102,20 @@
         btnTextPopupAvatar = 'Сохранено';
       });
   };
+
+  const handleAddPlaceSubmit = (card) => {
+    const { name, link } = card;
+
+    api
+      .addCard(name, link)
+      .then((res) => {
+        cards = [res, ...cards];
+        tooglePlacePopup();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 </script>
 
 <div class="root__container">
@@ -119,6 +134,10 @@
     btnText={btnTextPopupAvatar}
   />
   <EditProfilePopup isOpen={isOpenPopupProfile} onClose={toogleProfilePopup} />
-  <AddPlacePopup isOpen={isOpenPopupPlace} onClose={tooglePlacePopup} />
+  <AddPlacePopup
+    isOpen={isOpenPopupPlace}
+    onClose={tooglePlacePopup}
+    onAddPlace={handleAddPlaceSubmit}
+  />
   <ImagePopup />
 </div>
