@@ -8,6 +8,7 @@
   export let openAddCard;
   export let cards;
   export let onCardLike;
+  export let onCardDelete;
 
   let user = getContext('currentUser');
 </script>
@@ -45,7 +46,7 @@
     </div>
     <ul class="cards">
       {#each cards as card (card._id)}
-        <Card {card} {onCardLike} />
+        <Card {card} {onCardLike} {onCardDelete} />
       {/each}
     </ul>
   </section>

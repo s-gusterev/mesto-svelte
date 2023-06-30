@@ -13,6 +13,8 @@
       name,
       link,
     });
+    name = '';
+    link = '';
   };
 </script>
 

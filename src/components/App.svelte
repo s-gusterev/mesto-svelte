@@ -103,6 +103,7 @@
       });
   };
 
+  // Добавляем карточку
   const handleAddPlaceSubmit = (card) => {
     const { name, link } = card;
 
@@ -116,6 +117,18 @@
         console.log(err);
       });
   };
+
+  // Удаляем карточку
+  function handleCardDelete(card) {
+    api
+      .delCard(card._id)
+      .then(() => {
+        cards = cards.filter((c) => c._id !== card._id);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 </script>
 
 <div class="root__container">
@@ -126,6 +139,7 @@
     openAddCard={tooglePlacePopup}
     {cards}
     onCardLike={handleCardLike}
+    onCardDelete={handleCardDelete}
   />
   <EditAvatarPopup
     isOpen={isOpenPopupAvatar}
