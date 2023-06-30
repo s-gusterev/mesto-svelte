@@ -13,7 +13,9 @@
   let isOpenPopupAvatar = false;
   let isOpenPopupProfile = false;
   let isOpenPopupPlace = false;
+  let btnTextPopupAvatar = 'Обновить';
   let cards = [];
+
   let currentUser = writable({
     name: '',
     about: '',
@@ -24,6 +26,7 @@
   // Открытие модальных окон ---------------
   const toogleAvatarPopup = () => {
     isOpenPopupAvatar = !isOpenPopupAvatar;
+    btnTextPopupAvatar = 'Обновить';
   };
 
   const toogleProfilePopup = () => {
@@ -44,7 +47,6 @@
     api
       .getProfile()
       .then((res) => {
-        console.log(res);
         currentUser.set({
           name: res.name,
           about: res.about,
@@ -60,14 +62,13 @@
       .getInitialCards()
       .then((res) => {
         cards = res;
-        console.log(res);
       })
       .catch((err) => {
         console.log(err);
       });
   });
 
-  function handleCardLike(card) {
+  const handleCardLike = (card) => {
     let isLiked = card.likes.some((i) => i._id === $user._id);
     api
       .changeLikeCardStatus(card._id, !isLiked)
@@ -77,7 +78,29 @@
       .catch((err) => {
         console.log(err);
       });
-  }
+  };
+
+  const handleUpdateAvatar = (user) => {
+    const { avatar } = user;
+    btnTextPopupAvatar = 'Сохранение';
+    api
+      .updateAvatar(avatar)
+      .then((res) => {
+        currentUser.set({
+          name: res.name,
+          about: res.about,
+          avatar: res.avatar,
+          _id: res._id,
+        });
+        toogleAvatarPopup();
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        btnTextPopupAvatar = 'Сохранено';
+      });
+  };
 </script>
 
 <div class="root__container">
@@ -89,7 +112,12 @@
     {cards}
     onCardLike={handleCardLike}
   />
-  <EditAvatarPopup isOpen={isOpenPopupAvatar} onClose={toogleAvatarPopup} />
+  <EditAvatarPopup
+    isOpen={isOpenPopupAvatar}
+    onClose={toogleAvatarPopup}
+    onUpdateAvatar={handleUpdateAvatar}
+    btnText={btnTextPopupAvatar}
+  />
   <EditProfilePopup isOpen={isOpenPopupProfile} onClose={toogleProfilePopup} />
   <AddPlacePopup isOpen={isOpenPopupPlace} onClose={tooglePlacePopup} />
   <ImagePopup />
