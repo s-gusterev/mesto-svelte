@@ -1,12 +1,12 @@
 <script>
-  import { getContext } from 'svelte';
   export let card;
   export let onCardLike;
   export let onCardDelete;
+  export let onCardClick;
+  import { currentUser } from '../store';
 
-  let user = getContext('currentUser');
-  export let isLiked = card.likes.some((i) => i._id === $user._id);
-  const isOwn = card.owner._id === $user._id;
+  export let isLiked = card.likes.some((i) => i._id === $currentUser._id);
+  const isOwn = card.owner._id === $currentUser._id;
 
   const handleLikeClick = () => {
     onCardLike(card);
@@ -15,6 +15,10 @@
 
   const handleDeleteClick = () => {
     onCardDelete(card);
+  };
+
+  const handleClick = () => {
+    onCardClick(card);
   };
 </script>
 
@@ -31,7 +35,11 @@
       <span class="card__like-info">{card.likes.length}</span>
     </div>
   </div>
-  <div class="card__img" style="background-image: url({card.link}" />
+  <div
+    class="card__img"
+    style="background-image: url({card.link}"
+    on:click={handleClick}
+  />
   <button
     class="card__del"
     type="button"

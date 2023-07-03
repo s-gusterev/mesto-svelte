@@ -18,6 +18,7 @@
   };
 </script>
 
+<svelte:window on:click={() => console.log('Click')} />;
 <PopupWithForm
   title="Новое место"
   name="card-add"

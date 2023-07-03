@@ -1,6 +1,5 @@
 <script>
-  import { getContext } from 'svelte';
-
+  import { currentUser } from '../store';
   import Card from './Card.svelte';
 
   export let openEditAvatar;
@@ -9,8 +8,7 @@
   export let cards;
   export let onCardLike;
   export let onCardDelete;
-
-  let user = getContext('currentUser');
+  export let onCardClick;
 </script>
 
 <main class="main">
@@ -18,7 +16,7 @@
     <div class="profile__info">
       <div
         class="profile__avatar"
-        style="background-image: url({$user.avatar})"
+        style="background-image: url({$currentUser.avatar})"
       >
         <button
           class="profile__btn-edit-avatar"
@@ -28,8 +26,8 @@
         />
       </div>
       <div class="profile__name">
-        <h1 class="profile__title">{$user.name}</h1>
-        <p class="profile__subtitle">{$user.about}</p>
+        <h1 class="profile__title">{$currentUser.name}</h1>
+        <p class="profile__subtitle">{$currentUser.about}</p>
         <button
           class="profile__btn-edit-profile"
           type="button"
@@ -41,12 +39,12 @@
         class="profile__btn-add-place"
         type="button"
         aria-label="Добавить место"
-        on:click={openAddCard}
+        on:click|stopPropagation={openAddCard}
       />
     </div>
     <ul class="cards">
       {#each cards as card (card._id)}
-        <Card {card} {onCardLike} {onCardDelete} />
+        <Card {card} {onCardLike} {onCardDelete} {onCardClick} />
       {/each}
     </ul>
   </section>

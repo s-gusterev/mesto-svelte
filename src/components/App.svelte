@@ -1,27 +1,26 @@
 <script>
   import api from '../utils/api';
-  import { writable } from 'svelte/store';
   import { onMount } from 'svelte';
-  import { setContext, getContext } from 'svelte';
   import AddPlacePopup from './AddPlacePopup.svelte';
   import EditAvatarPopup from './EditAvatarPopup.svelte';
   import EditProfilePopup from './EditProfilePopup.svelte';
   import Header from './Header.svelte';
   import ImagePopup from './ImagePopup.svelte';
   import Main from './Main.svelte';
-
+  import Footer from './Footer.svelte';
+  import { currentUser } from '../store';
   let isOpenPopupAvatar = false;
   let isOpenPopupProfile = false;
   let isOpenPopupPlace = false;
   let btnTextPopupAvatar = 'Обновить';
+  let btnTextPopupProfile = 'Сохранить';
   let cards = [];
 
-  let currentUser = writable({
+  let selectedCard = {
+    isOpen: false,
     name: '',
-    about: '',
-    avatar: '',
-    _id: '',
-  });
+    link: '',
+  };
 
   // Открытие модальных окон ---------------
   const toogleAvatarPopup = () => {
@@ -31,15 +30,20 @@
 
   const toogleProfilePopup = () => {
     isOpenPopupProfile = !isOpenPopupProfile;
+    btnTextPopupProfile = 'Сохранить';
   };
 
   const tooglePlacePopup = () => {
     isOpenPopupPlace = !isOpenPopupPlace;
   };
-  // -------------------------------------
 
-  setContext('currentUser', currentUser);
-  let user = getContext('currentUser');
+  const closeImagePopup = () => {
+    selectedCard = {
+      ...selectedCard,
+      isOpen: false,
+    };
+  };
+  // -------------------------------------
 
   // Получаем карточки
   onMount(() => {
@@ -69,7 +73,7 @@
 
   // Ставим лайк
   const handleCardLike = (card) => {
-    let isLiked = card.likes.some((i) => i._id === $user._id);
+    let isLiked = card.likes.some((i) => i._id === $currentUser._id);
     api
       .changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
@@ -119,7 +123,7 @@
   };
 
   // Удаляем карточку
-  function handleCardDelete(card) {
+  const handleCardDelete = (card) => {
     api
       .delCard(card._id)
       .then(() => {
@@ -128,7 +132,39 @@
       .catch((err) => {
         console.log(err);
       });
-  }
+  };
+
+  // Показываем карточку в полном размере
+  const handleCardClick = (card) => {
+    selectedCard = {
+      isOpen: true,
+      name: card.name,
+      link: card.link,
+    };
+  };
+
+  // Обновляем данные о пользователе
+  const handleUpdateUser = (user) => {
+    const { name, about } = user;
+    btnTextPopupProfile = 'Сохранение';
+    api
+      .editProfile(name, about)
+      .then((res) => {
+        currentUser.set({
+          name: res.name,
+          about: res.about,
+          avatar: res.avatar,
+          _id: res._id,
+        });
+        toogleProfilePopup();
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        btnTextPopupProfile = 'Сохранено';
+      });
+  };
 </script>
 
 <div class="root__container">
@@ -140,18 +176,25 @@
     {cards}
     onCardLike={handleCardLike}
     onCardDelete={handleCardDelete}
+    onCardClick={handleCardClick}
   />
+  <Footer />
   <EditAvatarPopup
     isOpen={isOpenPopupAvatar}
     onClose={toogleAvatarPopup}
     onUpdateAvatar={handleUpdateAvatar}
     btnText={btnTextPopupAvatar}
   />
-  <EditProfilePopup isOpen={isOpenPopupProfile} onClose={toogleProfilePopup} />
+  <EditProfilePopup
+    isOpen={isOpenPopupProfile}
+    onClose={toogleProfilePopup}
+    onUpdateUser={handleUpdateUser}
+    btnText={btnTextPopupProfile}
+  />
   <AddPlacePopup
     isOpen={isOpenPopupPlace}
     onClose={tooglePlacePopup}
     onAddPlace={handleAddPlaceSubmit}
   />
-  <ImagePopup />
+  <ImagePopup onClose={closeImagePopup} card={selectedCard} />
 </div>
