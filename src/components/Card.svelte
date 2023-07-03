@@ -1,8 +1,10 @@
 <script>
+  import { blur } from 'svelte/transition';
   export let card;
   export let onCardLike;
   export let onCardDelete;
   export let onCardClick;
+  export let triggerCard = false;
   import { currentUser } from '../store';
 
   export let isLiked = card.likes.some((i) => i._id === $currentUser._id);
@@ -22,7 +24,10 @@
   };
 </script>
 
-<li class="card">
+<li
+  class="card"
+  transition:blur={triggerCard ? { duration: 1000 } : { duration: 0 }}
+>
   <div class="card__text">
     <h2 class="card__title">{card.name}</h2>
     <div class="card__like-section">

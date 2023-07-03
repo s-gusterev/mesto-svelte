@@ -15,6 +15,7 @@
   let btnTextPopupAvatar = 'Обновить';
   let btnTextPopupProfile = 'Сохранить';
   let cards = [];
+  let triggerCard;
 
   let selectedCard = {
     isOpen: false,
@@ -110,7 +111,7 @@
   // Добавляем карточку
   const handleAddPlaceSubmit = (card) => {
     const { name, link } = card;
-
+    triggerCard = true;
     api
       .addCard(name, link)
       .then((res) => {
@@ -181,6 +182,7 @@
     onCardLike={handleCardLike}
     onCardDelete={handleCardDelete}
     onCardClick={handleCardClick}
+    {triggerCard}
   />
   <Footer />
   <EditAvatarPopup

@@ -1,7 +1,6 @@
 <script>
   import { currentUser } from '../store';
   import Card from './Card.svelte';
-
   export let openEditAvatar;
   export let openEditProfile;
   export let openAddCard;
@@ -9,6 +8,7 @@
   export let onCardLike;
   export let onCardDelete;
   export let onCardClick;
+  export let triggerCard;
 </script>
 
 <main class="main">
@@ -22,7 +22,7 @@
           class="profile__btn-edit-avatar"
           type="button"
           aria-label="Редактировать аватар"
-          on:click={openEditAvatar}
+          on:click|stopPropagation={openEditAvatar}
         />
       </div>
       <div class="profile__name">
@@ -32,7 +32,7 @@
           class="profile__btn-edit-profile"
           type="button"
           aria-label="Редактировать данные профиля"
-          on:click={openEditProfile}
+          on:click|stopPropagation={openEditProfile}
         />
       </div>
       <button
@@ -44,7 +44,7 @@
     </div>
     <ul class="cards">
       {#each cards as card (card._id)}
-        <Card {card} {onCardLike} {onCardDelete} {onCardClick} />
+        <Card {card} {onCardLike} {onCardDelete} {onCardClick} {triggerCard} />
       {/each}
     </ul>
   </section>
