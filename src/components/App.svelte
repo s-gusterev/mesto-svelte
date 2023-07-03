@@ -167,6 +167,10 @@
   };
 </script>
 
+<svelte:head>
+  <title>Mesto Svelte</title>
+</svelte:head>
+
 <div class="root__container">
   <Header />
   <Main
