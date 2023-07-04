@@ -4,6 +4,9 @@
   export let onClose;
   export let onUpdateAvatar;
   export let btnText;
+  let avatarInput;
+  let avatarValid = true;
+  let avatarInputShowError;
   let avatar = '';
 
   const handleSubmit = (e) => {
@@ -14,6 +17,11 @@
     });
     avatar = '';
   };
+
+  const handleInput = (e) => {
+    avatarValid = avatarInput.validity.valid;
+    avatarInputShowError = avatarInput.validationMessage;
+  };
 </script>
 
 <PopupWithForm
@@ -23,18 +31,25 @@
   {isOpen}
   {onClose}
   onSubmit={handleSubmit}
-  disabled={!avatar || false}
+  disabled={!avatar || !avatarValid}
 >
   <label class="popup__label" for="input-avatar">
     <input
       class="popup__input"
+      class:popup__input_type_error={!avatarValid}
       type="url"
       name="avatar"
       id="input-avatar"
       required
       placeholder="Ссылка на аватар"
       bind:value={avatar}
+      bind:this={avatarInput}
+      on:input={(e) => handleInput(e)}
     />
-    <span class="popup__input-error input-avatar-error" />
+    <span
+      class="popup__input-error input-avatar-error"
+      class:popup__input-error_active={!avatarValid}
+      >{avatarInputShowError}</span
+    >
   </label>
 </PopupWithForm>
