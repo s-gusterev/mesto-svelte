@@ -6,6 +6,25 @@
   let name;
   let link;
 
+  let nameInput;
+  let linkInput;
+
+  let nameValid = true;
+  let nameInputShowError;
+
+  let linkValid = true;
+  let linkInputShowError;
+
+  const handleChangeName = (event) => {
+    nameValid = nameInput.validity.valid;
+    nameInputShowError = nameInput.validationMessage;
+  };
+
+  const handleChangeLink = (event) => {
+    linkValid = linkInput.validity.valid;
+    linkInputShowError = linkInput.validationMessage;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -25,7 +44,7 @@
   {isOpen}
   {onClose}
   onSubmit={handleSubmit}
-  disabled={!name || !link || false}
+  disabled={!name || !link || !nameValid || !linkValid || false}
 >
   <label class="popup__label" for="input-place">
     <input
@@ -38,8 +57,13 @@
       minLength="2"
       maxLength="30"
       bind:value={name}
+      on:input={(e) => handleChangeName(e)}
+      bind:this={nameInput}
     />
-    <span class="popup__input-error input-place-error" />
+    <span
+      class="popup__input-error input-place-error"
+      class:popup__input-error_active={!nameValid}>{nameInputShowError}</span
+    >
   </label>
   <label class="popup__label" for="input-image">
     <input
@@ -50,7 +74,12 @@
       required
       placeholder="Ссылка на картинку"
       bind:value={link}
+      on:input={(e) => handleChangeLink(e)}
+      bind:this={linkInput}
     />
-    <span class="popup__input-error input-image-error" />
+    <span
+      class="popup__input-error input-image-error"
+      class:popup__input-error_active={!linkValid}>{linkInputShowError}</span
+    >
   </label>
 </PopupWithForm>

@@ -20,9 +20,11 @@
     class="popup popup_opened popup_background_light popup_type_{name} root__popup"
   >
     <form
+      novalidate
       use:clickoutside={{
         limit: { parent },
         enabled: onClose,
+        event: 'mousedown',
       }}
       on:clickoutside={() => onClose()}
       transition:slide={{ duration: 500, axis: 'x' }}
